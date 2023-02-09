@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
 	"github.com/thlib/go-timezone-local/tzlocal"
 )
@@ -20,7 +22,8 @@ var utcCmd = &cobra.Command{
 		localTime := time.Now().Format(time.Kitchen)
 		tzname, _ := tzlocal.RuntimeTZ()
 		fmt.Println("ZONE : ", tzname, "Local Time :", localTime, " UTC Time : ", now)
-		// displayTable()
+		displayTableUTC(tzname, localTime, now)
+
 	},
 }
 
@@ -28,27 +31,27 @@ func init() {
 	rootCmd.AddCommand(utcCmd)
 }
 
-// func displayTable() {
-// 	app := tview.NewApplication()
-// 	table := tview.NewTable().
-// 		SetBorders(true)
-// 	lorem := strings.Split("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.", " ")
-// 	cols, rows := 2, 2
-// 	word := 0
-// 	for r := 0; r < rows; r++ {
-// 		for c := 0; c < cols; c++ {
-// 			color := tcell.ColorWhite
-// 			if c < 1 || r < 1 {
-// 				color = tcell.ColorYellow
-// 			}
-// 			table.SetCell(r, c,
-// 				tview.NewTableCell(lorem[word]).
-// 					SetTextColor(color).
-// 					SetAlign(tview.AlignCenter))
-// 			word = (word + 1) % len(lorem)
-// 		}
-// 	}
-// 	if err := app.SetRoot(table, true).SetFocus(table).Run(); err != nil {
-// 		panic(err)
-// 	}
-// }
+func displayTableUTC(tzname string, localTime string, now string) {
+	app := tview.NewApplication()
+	table := tview.NewTable().
+		SetBorders(true)
+	out := []string{"Local Time Zone", "Local Time", " UTC Time ", tzname, localTime, now}
+	cols, rows := 3, 2
+	word := 0
+	for r := 0; r < rows; r++ {
+		for c := 0; c < cols; c++ {
+			color := tcell.ColorWhite
+			if c < 1 || r < 1 {
+				color = tcell.ColorYellow
+			}
+			table.SetCell(r, c,
+				tview.NewTableCell(out[word]).
+					SetTextColor(color).
+					SetAlign(tview.AlignCenter))
+			word = (word + 1) % len(out)
+		}
+	}
+	if err := app.SetRoot(table, true).Run(); err != nil {
+		panic(err)
+	}
+}

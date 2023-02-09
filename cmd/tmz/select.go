@@ -48,6 +48,8 @@ var selectCmd = &cobra.Command{
 			fmt.Print("error")
 		}
 		now := time.Now().In(loc).Format(time.Kitchen)
+		out := []string{"Time Zone", "Current Time", selectedLocation, now}
+		displayTableShow(out)
 		fmt.Println("ZONE : ", selectedLocation, "Current Time :", now)
 	},
 }
