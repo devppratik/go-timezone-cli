@@ -2,7 +2,6 @@ package tmz
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -18,7 +17,7 @@ var removeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		tmzone := args[0]
 		home, _ := os.UserHomeDir()
-		file, err := ioutil.ReadFile(home + "/.tmz.list")
+		file, err := os.ReadFile(home + "/.tmz.list")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -29,7 +28,7 @@ var removeCmd = &cobra.Command{
 			}
 		}
 		output := strings.Join(lines, "\n")
-		err = ioutil.WriteFile(home+"/.tmz.list", []byte(output), 0644)
+		err = os.WriteFile(home+"/.tmz.list", []byte(output), 0644)
 		if err != nil {
 			log.Fatalln(err)
 		}
