@@ -22,8 +22,8 @@ var utcCmd = &cobra.Command{
 		localTime := time.Now().Format(time.Kitchen)
 		tzname, _ := tzlocal.RuntimeTZ()
 		fmt.Println("ZONE : ", tzname, "Local Time :", localTime, " UTC Time : ", now)
-		displayTableUTC(tzname, localTime, now)
-
+		out := []string{"Local Time Zone", "Local Time", " UTC Time ", tzname, localTime, now}
+		displayTable(out, 2, 3)
 	},
 }
 
@@ -31,12 +31,10 @@ func init() {
 	rootCmd.AddCommand(utcCmd)
 }
 
-func displayTableUTC(tzname string, localTime string, now string) {
+func displayTable(out []string, rows int, cols int) {
 	app := tview.NewApplication()
 	table := tview.NewTable().
 		SetBorders(true)
-	out := []string{"Local Time Zone", "Local Time", " UTC Time ", tzname, localTime, now}
-	cols, rows := 3, 2
 	word := 0
 	for r := 0; r < rows; r++ {
 		for c := 0; c < cols; c++ {
