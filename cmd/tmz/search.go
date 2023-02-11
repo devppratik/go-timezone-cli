@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	tmz "tmz/pkg/ui"
 
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
@@ -46,7 +47,7 @@ var searchCmd = &cobra.Command{
 			if err != nil {
 				fmt.Print("error")
 			}
-			now := time.Now().In(loc).Format(time.Kitchen)
+			now := time.Now().In(loc).Format(time.Stamp)
 			fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
 			return
 		}
@@ -68,9 +69,9 @@ var searchCmd = &cobra.Command{
 		if err != nil {
 			fmt.Print("error")
 		}
-		now := time.Now().In(loc).Format(time.Kitchen)
+		now := time.Now().In(loc).Format(time.Stamp)
 		out := []string{"Time Zone", "Current Time", foundSearchItem, now}
-		displayTableShow(out)
+		tmz.DisplayTable(out, len(out)/2, 2)
 		fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
 	},
 }

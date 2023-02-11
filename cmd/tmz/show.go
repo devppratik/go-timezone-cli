@@ -6,9 +6,8 @@ import (
 	"log"
 	"os"
 	"time"
+	tmz "tmz/pkg/ui"
 
-	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
 )
 
@@ -55,41 +54,14 @@ var showCmd = &cobra.Command{
 				now, _ = time.ParseInLocation("2006-01-02 15:04", "2023-01-01 "+args[0], currentTZ)
 
 			}
-			timetoConvert := now.In(loc).Format(time.Kitchen)
+			timetoConvert := now.In(loc).Format(time.Stamp)
 			out = append(out, line, timetoConvert)
 			fmt.Println("ZONE : ", line, "Current Time :", timetoConvert)
 		}
-		// localTime := time.Now().Format(time.Kitchen)
-		// tzname, _ := tzlocal.RuntimeTZ()
-		// fmt.Println("ZONE : ", tzname, "Local Time :", localTime)
-		displayTableShow(out)
+		tmz.DisplayTable(out, len(out)/2, 2)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(showCmd)
-}
-
-func displayTableShow(out []string) {
-	app := tview.NewApplication()
-	table := tview.NewTable().
-		SetBorders(true)
-	cols, rows := 2, len(out)/2
-	word := 0
-	for r := 0; r < rows; r++ {
-		for c := 0; c < cols; c++ {
-			color := tcell.ColorWhite
-			if c < 1 || r < 1 {
-				color = tcell.ColorYellow
-			}
-			table.SetCell(r, c,
-				tview.NewTableCell(out[word]).
-					SetTextColor(color).
-					SetAlign(tview.AlignCenter))
-			word = (word + 1) % len(out)
-		}
-	}
-	if err := app.SetRoot(table, true).Run(); err != nil {
-		panic(err)
-	}
 }

@@ -1,13 +1,9 @@
 package tmz
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"strings"
+	tmz "tmz/pkg/utils"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 )
 
 var removeCmd = &cobra.Command{
@@ -16,23 +12,7 @@ var removeCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		tmzone := args[0]
-		home, _ := os.UserHomeDir()
-		file, err := os.ReadFile(home + "/.tmz.list")
-		if err != nil {
-			log.Fatal(err)
-		}
-		lines := strings.Split(string(file), "\n")
-		for i, line := range lines {
-			if strings.Contains(line, tmzone) {
-				lines = slices.Delete(lines, i, i+1)
-			}
-		}
-		output := strings.Join(lines, "\n")
-		err = os.WriteFile(home+"/.tmz.list", []byte(output), 0644)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		fmt.Print("Removed Timezone ", tmzone, " successfully")
+		tmz.RemoveTimeZoneFromConfig(tmzone)
 	},
 }
 

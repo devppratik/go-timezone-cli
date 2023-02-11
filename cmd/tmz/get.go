@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	tmz "tmz/pkg/ui"
 
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
@@ -57,10 +58,9 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			fmt.Print("error")
 		}
-		now := time.Now().In(loc).Format(time.Kitchen)
+		now := time.Now().In(loc).Format(time.Stamp)
 		items := []string{"Time Zone", "Current Time", selectedTimeZone, now}
-		displayTableShow(items)
-		// print(out)
+		tmz.DisplayTable(items, len(items)/2, 2) // print(out)
 	},
 }
 
