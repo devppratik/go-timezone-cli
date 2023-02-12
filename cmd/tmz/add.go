@@ -1,7 +1,7 @@
 package tmz
 
 import (
-	tmz "tmz/pkg/utils"
+	tmzUtils "tmz/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ var addCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		tmzone := args[0]
-		tmz.AddTimeZoneToConfig(tmzone)
+		tmzUtils.AddTimeZoneToConfig(tmzone)
 	},
 }
 

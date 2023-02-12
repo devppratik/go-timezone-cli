@@ -1,12 +1,10 @@
 package tmz
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"time"
-	tmz "tmz/pkg/ui"
+	tmzUI "tmz/pkg/ui"
+	tmzUtils "tmz/pkg/utils"
 
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
@@ -17,20 +15,7 @@ var selectCmd = &cobra.Command{
 	Use:   "select",
 	Short: "Displays local datetime of all saved timezones",
 	Run: func(cmd *cobra.Command, args []string) {
-		home, _ := os.UserHomeDir()
-		file, err := os.OpenFile(home+"/.tmz.list", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-		sc := bufio.NewScanner(file)
-		lines := make([]string, 0)
-		for sc.Scan() {
-			lines = append(lines, sc.Text())
-		}
-		if err := sc.Err(); err != nil {
-			log.Fatal(err)
-		}
+		lines := tmzUtils.ReadConfigFile()
 		app := tview.NewApplication()
 		list := tview.NewList()
 		item := 'a'
@@ -50,7 +35,7 @@ var selectCmd = &cobra.Command{
 		}
 		now := time.Now().In(loc).Format(time.Stamp)
 		out := []string{"Time Zone", "Current Time", selectedLocation, now}
-		tmz.DisplayTable(out, len(out)/2, 2)
+		tmzUI.DisplayTable(out, len(out)/2, 2)
 		fmt.Println("ZONE : ", selectedLocation, "Current Time :", now)
 	},
 }

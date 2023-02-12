@@ -3,7 +3,7 @@ package tmz
 import (
 	"fmt"
 	"time"
-	tmz "tmz/pkg/ui"
+	tmzUI "tmz/pkg/ui"
 
 	"github.com/spf13/cobra"
 	"github.com/thlib/go-timezone-local/tzlocal"
@@ -22,7 +22,7 @@ var utcCmd = &cobra.Command{
 		tzname, _ := tzlocal.RuntimeTZ()
 		fmt.Println("ZONE : ", tzname, "Local Time :", localTime, " UTC Time : ", now)
 		out := []string{"Local Time Zone", "Local Time", " UTC Time ", tzname, localTime, now}
-		tmz.DisplayTable(out, 2, 3)
+		tmzUI.DisplayTable(out, 2, 3)
 	},
 }
 

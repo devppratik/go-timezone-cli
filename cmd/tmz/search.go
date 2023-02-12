@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 	"time"
-	tmz "tmz/pkg/ui"
+	tmzUI "tmz/pkg/ui"
 
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
@@ -21,14 +21,14 @@ var searchCmd = &cobra.Command{
 			log.Fatal("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
 		}
 		countryList := gojsonq.New().File("pkg/country.json")
+		app := tview.NewApplication()
+		list := tview.NewList()
+		var foundSearchItem string
 
 		if len(countryCode) > 2 {
 			res, _ := countryList.From("ALL").GetR()
 			conv, _ := res.StringSlice()
 			var lines []string
-			app := tview.NewApplication()
-			list := tview.NewList()
-			var foundSearchItem string
 			for _, line := range conv {
 				if strings.Contains(strings.ToLower(line), countryCode) {
 					lines = append(lines, line)
@@ -40,38 +40,28 @@ var searchCmd = &cobra.Command{
 					app.Stop()
 				})
 			}
-			if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-				panic(err)
+		} else {
+			res, _ := countryList.From(strings.ToUpper(countryCode)).GetR()
+			conv, _ := res.StringSlice()
+			for _, line := range conv {
+				list.AddItem(line, "", 'a', func() {
+					foundSearchItem = conv[list.GetCurrentItem()]
+					app.Stop()
+				})
 			}
-			loc, err := time.LoadLocation(foundSearchItem)
-			if err != nil {
-				fmt.Print("error")
-			}
-			now := time.Now().In(loc).Format(time.Stamp)
-			fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
-			return
-		}
-		res, _ := countryList.From(strings.ToUpper(countryCode)).GetR()
-		conv, _ := res.StringSlice()
-		app := tview.NewApplication()
-		list := tview.NewList()
-		var foundSearchItem string
-		for _, line := range conv {
-			list.AddItem(line, "", 'a', func() {
-				foundSearchItem = conv[list.GetCurrentItem()]
-				app.Stop()
-			})
-		}
-		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-			panic(err)
 		}
 		loc, err := time.LoadLocation(foundSearchItem)
 		if err != nil {
 			fmt.Print("error")
 		}
+
+		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
+			panic(err)
+		}
+
 		now := time.Now().In(loc).Format(time.Stamp)
 		out := []string{"Time Zone", "Current Time", foundSearchItem, now}
-		tmz.DisplayTable(out, len(out)/2, 2)
+		tmzUI.DisplayTable(out, len(out)/2, 2)
 		fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
 	},
 }
