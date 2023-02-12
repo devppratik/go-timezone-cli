@@ -1,7 +1,7 @@
 package tmz
 
 import (
-	"fmt"
+	"log"
 	"time"
 	tmzUI "tmz/pkg/ui"
 
@@ -12,17 +12,21 @@ import (
 var utcCmd = &cobra.Command{
 	Use:   "utc",
 	Short: "Gives the time in UTC",
+	Long:  "Outputs the current UTC Time along with the current time at the local timezone",
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		loc, err := time.LoadLocation("UTC")
+		utcLocation, err := time.LoadLocation("UTC")
 		if err != nil {
-			fmt.Print("error")
+			log.Fatalln(err)
 		}
-		now := time.Now().In(loc).Format(time.Stamp)
-		localTime := time.Now().Format(time.Stamp)
-		tzname, _ := tzlocal.RuntimeTZ()
-		fmt.Println("ZONE : ", tzname, "Local Time :", localTime, " UTC Time : ", now)
-		out := []string{"Local Time Zone", "Local Time", " UTC Time ", tzname, localTime, now}
-		tmzUI.DisplayTable(out, 2, 3)
+		currentUTCTime := time.Now().In(utcLocation).Format(time.Stamp)
+		currentLocalTime := time.Now().Format(time.Stamp)
+		localTZName, err := tzlocal.RuntimeTZ()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		tableItems := []string{"Local Time Zone", "Local Time", " UTC Time ", localTZName, currentLocalTime, currentUTCTime}
+		tmzUI.DisplayTable(tableItems, 2, 3)
 	},
 }
 

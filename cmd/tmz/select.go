@@ -1,7 +1,7 @@
 package tmz
 
 import (
-	"fmt"
+	"log"
 	"time"
 	tmzUI "tmz/pkg/ui"
 	tmzUtils "tmz/pkg/utils"
@@ -10,33 +10,36 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var selectedLocation string
 var selectCmd = &cobra.Command{
 	Use:   "select",
-	Short: "Displays local datetime of all saved timezones",
+	Short: "Select a timezone from all saved timezones",
+	Long:  "Select a timezone from all saved timezones to view the current time in that timezone",
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		lines := tmzUtils.ReadConfigFile()
+		var selectedLocation string
+		var listOfTimeZones []string = tmzUtils.ReadConfigFile()
+		var itemOption rune = 'a'
 		app := tview.NewApplication()
 		list := tview.NewList()
-		item := 'a'
-		for _, line := range lines {
-			list.AddItem(line, "", item, func() {
-				selectedLocation = lines[list.GetCurrentItem()]
+
+		for _, tmZone := range listOfTimeZones {
+			list.AddItem(tmZone, "", itemOption, func() {
+				selectedLocation = listOfTimeZones[list.GetCurrentItem()]
 				app.Stop()
 			})
-			item += 1
+			itemOption += 1
 		}
 		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
-		loc, err := time.LoadLocation(selectedLocation)
+
+		location, err := time.LoadLocation(selectedLocation)
 		if err != nil {
-			fmt.Print("error")
+			log.Fatalln(err)
 		}
-		now := time.Now().In(loc).Format(time.Stamp)
-		out := []string{"Time Zone", "Current Time", selectedLocation, now}
-		tmzUI.DisplayTable(out, len(out)/2, 2)
-		fmt.Println("ZONE : ", selectedLocation, "Current Time :", now)
+		currentTime := time.Now().In(location).Format(time.Stamp)
+		tableItems := []string{"Time Zone", "Current Time", selectedLocation, currentTime}
+		tmzUI.DisplayTable(tableItems, len(tableItems)/2, 2)
 	},
 }
 

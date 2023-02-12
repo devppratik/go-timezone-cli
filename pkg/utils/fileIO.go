@@ -11,49 +11,49 @@ import (
 )
 
 var home, _ = os.UserHomeDir()
-var file, err = os.OpenFile(home+"/.tmz.list", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+var configFile, err = os.OpenFile(home+"/.tmz.list", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
 
 func ReadConfigFile() []string {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
-	sc := bufio.NewScanner(file)
-	lines := make([]string, 0)
+	sc := bufio.NewScanner(configFile)
+	listOfTimeZones := make([]string, 0)
 	for sc.Scan() {
-		lines = append(lines, sc.Text())
+		listOfTimeZones = append(listOfTimeZones, sc.Text())
 	}
 	if err := sc.Err(); err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
-	return lines
+	return listOfTimeZones
 }
 
 func AddTimeZoneToConfig(tmzone string) {
-	lines := ReadConfigFile()
-	if slices.Contains(lines, tmzone) {
-		fmt.Printf("TimeZone Already Exists")
+	listOfTimeZones := ReadConfigFile()
+	if slices.Contains(listOfTimeZones, tmzone) {
+		log.Fatalln("TimeZone Already Exists")
 		return
 	}
-	if _, err := file.WriteString(tmzone + "\n"); err != nil {
+	if _, err := configFile.WriteString(tmzone + "\n"); err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Print("Added Timezone ", tmzone, " successfully")
+	fmt.Println("Added Timezone ", tmzone, " successfully")
 }
 
 func RemoveTimeZoneFromConfig(tmzone string) {
-	lines := ReadConfigFile()
-	for i, line := range lines {
+	listOfTimeZones := ReadConfigFile()
+	for i, line := range listOfTimeZones {
 		if strings.Contains(line, tmzone) {
-			lines = slices.Delete(lines, i, i+1)
+			listOfTimeZones = slices.Delete(listOfTimeZones, i, i+1)
 		}
 	}
-	output := strings.Join(lines, "\n")
+	output := strings.Join(listOfTimeZones, "\n")
 	err := os.WriteFile(home+"/.tmz.list", []byte(output), 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if _, err = file.WriteString("\n"); err != nil {
+	if _, err = configFile.WriteString("\n"); err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Print("Removed Timezone ", tmzone, " successfully")
+	fmt.Println("Removed Timezone ", tmzone, " successfully")
 }

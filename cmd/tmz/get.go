@@ -1,7 +1,7 @@
 package tmz
 
 import (
-	"fmt"
+	"log"
 	"strings"
 	"time"
 	tmz "tmz/pkg/ui"
@@ -14,50 +14,57 @@ import (
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get a timezone using the timezone abbreviation",
+	Long:  "Search for a specific timezone using the timezone abbreviation",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var selectedTimeZone string
-		countryCode := strings.ToUpper(args[0])
+		var countryCode string = strings.ToUpper(args[0])
+		matchedTimeZones := []string{}
+		itemOption := 'a'
+
+		// Read List From abbreviations JSON File
 		countryList := gojsonq.New().File("pkg/data/abbr.json")
 		res := countryList.From("zones").Where("abbr", "=", countryCode).Get()
-		out := []string{}
+
 		app := tview.NewApplication()
 		list := tview.NewList()
-		item := 'a'
 
-		for _, value := range res.([]interface{}) {
-			a, b, c := "", "", ""
-			for key, value := range value.(map[string]interface{}) {
+		for _, item := range res.([]interface{}) {
+			var zones, name, abbr string
+			for key, value := range item.(map[string]interface{}) {
 				if key == "utc" {
 					utcname, _ := value.([]interface{})[0].(string)
-					a = utcname
+					zones = utcname
 				} else if key == "value" {
-					b = value.(string)
+					name = value.(string)
 				} else if key == "abbr" {
-					c = value.(string)
+					abbr = value.(string)
 				}
 			}
-			out = append(out, a, b, c)
+			matchedTimeZones = append(matchedTimeZones, zones, name, abbr)
+		}
+		if len(matchedTimeZones) == 0 {
+			log.Fatalln("Wrong TimeZone Abbreviation! Please enter correct abbreviation according to IANA List")
 		}
 
-		for i := 0; i < len(out); i += 3 {
-			list.AddItem(out[i+2]+" "+out[i+1], out[i], item, func() {
-				selectedTimeZone = out[list.GetCurrentItem()*3]
+		for i := 0; i < len(matchedTimeZones); i += 3 {
+			list.AddItem(matchedTimeZones[i+2]+" "+matchedTimeZones[i+1], matchedTimeZones[i], itemOption, func() {
+				selectedTimeZone = matchedTimeZones[list.GetCurrentItem()*3]
 				app.Stop()
 			})
-			item += 1
+			itemOption += 1
 		}
 		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 
-		loc, err := time.LoadLocation(selectedTimeZone)
+		location, err := time.LoadLocation(selectedTimeZone)
 		if err != nil {
-			fmt.Print("error")
+			log.Fatalln(err)
 		}
-		now := time.Now().In(loc).Format(time.Stamp)
-		items := []string{"Time Zone", "Current Time", selectedTimeZone, now}
-		tmz.DisplayTable(items, len(items)/2, 2)
+		currentTZTime := time.Now().In(location).Format(time.Stamp)
+		tableItems := []string{"Time Zone", "Current Time", selectedTimeZone, currentTZTime}
+		tmz.DisplayTable(tableItems, len(tableItems)/2, 2)
 	},
 }
 

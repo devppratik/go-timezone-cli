@@ -1,7 +1,6 @@
 package tmz
 
 import (
-	"fmt"
 	"log"
 	"time"
 	tmzUI "tmz/pkg/ui"
@@ -13,41 +12,43 @@ import (
 var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Displays local datetime of all saved timezones",
+	Long:  "Get a List of All Locally Saved Timezones defined in the config File. Pass custom time as argument to get the time at different zones at the specified time",
 	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		currentTime := true
-		out := []string{"Time Zone"}
-		lines := tmzUtils.ReadConfigFile()
-
+		// Variable to determine current time to display or custom time
+		var cntTime bool = true
 		if len(args) > 1 {
-			log.Fatal("Wrong number of arguments. Expected 0 or 1 Arguments. Recieved ", len(args))
+			log.Fatalln("Wrong number of arguments. Expected 1 or No Arguments but Recieved ", len(args))
 		} else if len(args) == 1 {
-			currentTime = false
+			cntTime = false
 		}
 
-		if !currentTime {
-			out = append(out, "Converted Time")
+		var tableItems = []string{"Time Zone"}
+		var dateToday string = time.Now().UTC().Format("2006-01-02")
+		var listOfTimeZones []string = tmzUtils.ReadConfigFile()
+		if !cntTime {
+			tableItems = append(tableItems, "Converted Time")
 		} else {
-			out = append(out, "Current Time")
+			tableItems = append(tableItems, "Current Time")
 		}
-		dateToday := time.Now().UTC().Format("2006-01-02")
-		fmt.Println(dateToday)
-		for _, line := range lines {
-			loc, err := time.LoadLocation(line)
-			now := time.Now()
-			if err != nil {
-				fmt.Print("error")
-			}
-			if !currentTime {
-				currentTZ := time.Now().Local().Location()
 
-				now, _ = time.ParseInLocation("2006-01-02 15:04", dateToday+" "+args[0], currentTZ)
+		for _, tmZone := range listOfTimeZones {
+			location, err := time.LoadLocation(tmZone)
+			currentTime := time.Now()
+			if err != nil {
+				log.Fatalln(err)
 			}
-			timetoConvert := now.In(loc).Format(time.Stamp)
-			out = append(out, line, timetoConvert)
-			fmt.Println("ZONE : ", line, "Current Time :", timetoConvert)
+			if !cntTime {
+				currentTZ := time.Now().Local().Location()
+				currentTime, err = time.ParseInLocation("2006-01-02 15:04", dateToday+" "+args[0], currentTZ)
+				if err != nil {
+					log.Fatalln(err)
+				}
+			}
+			locationTime := currentTime.In(location).Format(time.Stamp)
+			tableItems = append(tableItems, tmZone, locationTime)
 		}
-		tmzUI.DisplayTable(out, len(out)/2, 2)
+		tmzUI.DisplayTable(tableItems, len(tableItems)/2, 2)
 	},
 }
 

@@ -5,15 +5,15 @@ import (
 	"github.com/rivo/tview"
 )
 
-func DisplayTable(out []string, rows int, cols int) {
+func DisplayTable(tableItems []string, rows int, cols int) {
 	app := tview.NewApplication()
-	table := GetTableWidget(out, rows, cols)
+	table := GetTableWidget(tableItems, rows, cols)
 	if err := app.SetRoot(table, true).Run(); err != nil {
 		panic(err)
 	}
 }
 
-func GetTableWidget(out []string, rows int, cols int) *tview.Table {
+func GetTableWidget(tableItems []string, rows int, cols int) *tview.Table {
 	table := tview.NewTable().
 		SetBorders(true)
 	word := 0
@@ -24,10 +24,10 @@ func GetTableWidget(out []string, rows int, cols int) *tview.Table {
 				color = tcell.ColorYellow
 			}
 			table.SetCell(r, c,
-				tview.NewTableCell(out[word]).
+				tview.NewTableCell(tableItems[word]).
 					SetTextColor(color).
 					SetAlign(tview.AlignCenter))
-			word = (word + 1) % len(out)
+			word = (word + 1) % len(tableItems)
 		}
 	}
 	return table

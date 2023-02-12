@@ -14,59 +14,60 @@ import (
 
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "Search for local date time from the timezones (Interactive)",
+	Short: "Search for a timezones (Interactive)",
+	Long:  "Search for timezone using the country abbrevaition or timezone name & get the current time for the timezone",
 	Run: func(cmd *cobra.Command, args []string) {
+		var selectedTimeZone string
 		countryCode := args[0]
 		if len(countryCode) < 2 {
-			log.Fatal("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
+			log.Fatalln("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
 		}
+		// Read the Country List JSON
 		countryList := gojsonq.New().File("pkg/data/country.json")
 		app := tview.NewApplication()
-		// pages := tview.NewPages()
 		list := tview.NewList()
-		var foundSearchItem string
 
 		if len(countryCode) > 2 {
 			res, _ := countryList.From("ALL").GetR()
 			conv, _ := res.StringSlice()
-			var lines []string
-			for _, line := range conv {
-				if strings.Contains(strings.ToLower(line), countryCode) {
-					lines = append(lines, line)
+			var listOfTimeZones []string
+			for _, tmZone := range conv {
+				if strings.Contains(strings.ToLower(tmZone), countryCode) {
+					listOfTimeZones = append(listOfTimeZones, tmZone)
 				}
 			}
-			for _, line := range lines {
-				list.AddItem(line, "", 'a', func() {
-					foundSearchItem = lines[list.GetCurrentItem()]
+			for _, tmZone := range listOfTimeZones {
+				list.AddItem(tmZone, "", 'a', func() {
+					selectedTimeZone = listOfTimeZones[list.GetCurrentItem()]
 					app.Stop()
 				})
 			}
 		} else {
 			res, _ := countryList.From(strings.ToUpper(countryCode)).GetR()
 			conv, _ := res.StringSlice()
-			for _, line := range conv {
-				list.AddItem(line, "", 'a', func() {
-					foundSearchItem = conv[list.GetCurrentItem()]
+			for _, tmZone := range conv {
+				list.AddItem(tmZone, "", 'a', func() {
+					selectedTimeZone = conv[list.GetCurrentItem()]
 					app.Stop()
 				})
 			}
 		}
-		loc, err := time.LoadLocation(foundSearchItem)
+
+		location, err := time.LoadLocation(selectedTimeZone)
 		if err != nil {
 			fmt.Print("error")
 		}
-
-		now := time.Now().In(loc).Format(time.Stamp)
-		out := []string{"Time Zone", "Current Time", foundSearchItem, now}
-
-		// table := tmzUI.GetTableWidget(out, len(out)/2, 2)
-		// fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
+		// pages := tview.NewPages()
+		// table := tmzUI.GetTableWidget(tableItems, len(tableItems)/2, 2)
+		// fmt.Println("ZONE : ", foundSearchItem, "Current Time :", currentTime)
 		// pages.AddPage("List", list, true, true)
 		// pages.AddPage("Display", table, true, false)
+		currentTime := time.Now().In(location).Format(time.Stamp)
+		tableItems := []string{"Time Zone", "Current Time", selectedTimeZone, currentTime}
 		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 			panic(err)
 		}
-		tmzUI.DisplayTable(out, len(out)/2, 2)
+		tmzUI.DisplayTable(tableItems, len(tableItems)/2, 2)
 	},
 }
 
