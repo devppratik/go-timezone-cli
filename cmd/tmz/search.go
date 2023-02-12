@@ -20,8 +20,9 @@ var searchCmd = &cobra.Command{
 		if len(countryCode) < 2 {
 			log.Fatal("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
 		}
-		countryList := gojsonq.New().File("pkg/country.json")
+		countryList := gojsonq.New().File("pkg/data/country.json")
 		app := tview.NewApplication()
+		// pages := tview.NewPages()
 		list := tview.NewList()
 		var foundSearchItem string
 
@@ -55,14 +56,17 @@ var searchCmd = &cobra.Command{
 			fmt.Print("error")
 		}
 
+		now := time.Now().In(loc).Format(time.Stamp)
+		out := []string{"Time Zone", "Current Time", foundSearchItem, now}
+
+		// table := tmzUI.GetTableWidget(out, len(out)/2, 2)
+		// fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
+		// pages.AddPage("List", list, true, true)
+		// pages.AddPage("Display", table, true, false)
 		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 			panic(err)
 		}
-
-		now := time.Now().In(loc).Format(time.Stamp)
-		out := []string{"Time Zone", "Current Time", foundSearchItem, now}
 		tmzUI.DisplayTable(out, len(out)/2, 2)
-		fmt.Println("ZONE : ", foundSearchItem, "Current Time :", now)
 	},
 }
 

@@ -7,6 +7,13 @@ import (
 
 func DisplayTable(out []string, rows int, cols int) {
 	app := tview.NewApplication()
+	table := GetTableWidget(out, rows, cols)
+	if err := app.SetRoot(table, true).Run(); err != nil {
+		panic(err)
+	}
+}
+
+func GetTableWidget(out []string, rows int, cols int) *tview.Table {
 	table := tview.NewTable().
 		SetBorders(true)
 	word := 0
@@ -23,7 +30,5 @@ func DisplayTable(out []string, rows int, cols int) {
 			word = (word + 1) % len(out)
 		}
 	}
-	if err := app.SetRoot(table, true).Run(); err != nil {
-		panic(err)
-	}
+	return table
 }

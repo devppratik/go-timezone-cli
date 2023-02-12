@@ -18,7 +18,7 @@ var getCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var selectedTimeZone string
 		countryCode := strings.ToUpper(args[0])
-		countryList := gojsonq.New().File("pkg/abbr.json")
+		countryList := gojsonq.New().File("pkg/data/abbr.json")
 		res := countryList.From("zones").Where("abbr", "=", countryCode).Get()
 		out := []string{}
 		app := tview.NewApplication()

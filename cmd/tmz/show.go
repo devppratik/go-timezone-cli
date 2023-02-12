@@ -30,7 +30,8 @@ var showCmd = &cobra.Command{
 		} else {
 			out = append(out, "Current Time")
 		}
-
+		dateToday := time.Now().UTC().Format("2006-01-02")
+		fmt.Println(dateToday)
 		for _, line := range lines {
 			loc, err := time.LoadLocation(line)
 			now := time.Now()
@@ -39,7 +40,8 @@ var showCmd = &cobra.Command{
 			}
 			if !currentTime {
 				currentTZ := time.Now().Local().Location()
-				now, _ = time.ParseInLocation("2006-01-02 15:04", "2023-01-01 "+args[0], currentTZ)
+
+				now, _ = time.ParseInLocation("2006-01-02 15:04", dateToday+" "+args[0], currentTZ)
 			}
 			timetoConvert := now.In(loc).Format(time.Stamp)
 			out = append(out, line, timetoConvert)
