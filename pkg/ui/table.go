@@ -1,6 +1,9 @@
 package tmz
 
 import (
+	"os"
+
+	"github.com/aquasecurity/table"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -31,4 +34,14 @@ func GetTableWidget(tableItems []string, rows int, cols int) *tview.Table {
 		}
 	}
 	return table
+}
+
+func DisplayNewTable(rowItems []string, rowHeaders ...string) {
+	t := table.New(os.Stdout)
+	t.SetLineStyle(table.StyleWhite)
+	t.SetHeaders(rowHeaders...)
+	t.SetHeaderStyle(table.StyleBold)
+	t.SetHeaderStyle(table.StyleBrightYellow)
+	t.AddRows(rowItems)
+	t.Render()
 }

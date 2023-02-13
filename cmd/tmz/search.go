@@ -7,7 +7,6 @@ import (
 	"time"
 	tmzUI "tmz/pkg/ui"
 
-	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
 	"github.com/thedevsaddam/gojsonq/v2"
 )
@@ -24,8 +23,6 @@ var searchCmd = &cobra.Command{
 		}
 		// Read the Country List JSON
 		countryList := gojsonq.New().File("pkg/data/country.json")
-		app := tview.NewApplication()
-		list := tview.NewList()
 
 		if len(countryCode) > 2 {
 			res, _ := countryList.From("ALL").GetR()
@@ -36,38 +33,21 @@ var searchCmd = &cobra.Command{
 					listOfTimeZones = append(listOfTimeZones, tmZone)
 				}
 			}
-			for _, tmZone := range listOfTimeZones {
-				list.AddItem(tmZone, "", 'a', func() {
-					selectedTimeZone = listOfTimeZones[list.GetCurrentItem()]
-					app.Stop()
-				})
-			}
+			selectedTimeZone = tmzUI.SelectTimeZone(listOfTimeZones)
 		} else {
 			res, _ := countryList.From(strings.ToUpper(countryCode)).GetR()
 			conv, _ := res.StringSlice()
-			for _, tmZone := range conv {
-				list.AddItem(tmZone, "", 'a', func() {
-					selectedTimeZone = conv[list.GetCurrentItem()]
-					app.Stop()
-				})
-			}
+			selectedTimeZone = tmzUI.SelectTimeZone(conv)
 		}
 
 		location, err := time.LoadLocation(selectedTimeZone)
 		if err != nil {
 			fmt.Print("error")
 		}
-		// pages := tview.NewPages()
-		// table := tmzUI.GetTableWidget(tableItems, len(tableItems)/2, 2)
-		// fmt.Println("ZONE : ", foundSearchItem, "Current Time :", currentTime)
-		// pages.AddPage("List", list, true, true)
-		// pages.AddPage("Display", table, true, false)
 		currentTime := time.Now().In(location).Format(time.Stamp)
-		tableItems := []string{"Time Zone", "Current Time", selectedTimeZone, currentTime}
-		if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-			panic(err)
-		}
-		tmzUI.DisplayTable(tableItems, len(tableItems)/2, 2)
+		tableHeaders := []string{"Time Zone", "Current Time"}
+		tableItems := []string{selectedTimeZone, currentTime}
+		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
 	},
 }
 
