@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/gdamore/tcell/v2 v2.5.3
+	github.com/kyokomi/emoji/v2 v2.2.11
 	github.com/manifoldco/promptui v0.9.0
 	github.com/rivo/tview v0.0.0-20230206063056-c1eadf1b0bf6
 	github.com/spf13/cobra v1.6.1
