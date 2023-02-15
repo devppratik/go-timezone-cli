@@ -36,12 +36,14 @@ func GetTableWidget(tableItems []string, rows int, cols int) *tview.Table {
 	return table
 }
 
-func DisplayNewTable(rowItems []string, rowHeaders ...string) {
+func DisplayNewTable(rowItems [][]string, rowHeaders ...string) {
 	t := table.New(os.Stdout)
 	t.SetLineStyle(table.StyleWhite)
 	t.SetHeaders(rowHeaders...)
 	t.SetHeaderStyle(table.StyleBold)
 	t.SetHeaderStyle(table.StyleBrightYellow)
-	t.AddRows(rowItems)
+	for _, row := range rowItems {
+		t.AddRows(row)
+	}
 	t.Render()
 }

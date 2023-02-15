@@ -24,7 +24,7 @@ var selectCmd = &cobra.Command{
 		}
 		currentTime := time.Now().In(location).Format(time.Stamp)
 		tableHeaders := []string{"Time Zone", "Current Time"}
-		tableItems := []string{selectedLocation, currentTime}
+		tableItems := [][]string{{selectedLocation, currentTime}}
 		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
 	},
 }

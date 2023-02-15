@@ -23,13 +23,14 @@ var showCmd = &cobra.Command{
 			cntTime = false
 		}
 
-		var tableItems = []string{"Time Zone"}
+		var tableItems = [][]string{}
+		var tableHeaders = []string{"TimeZone"}
 		var dateToday string = time.Now().UTC().Format("2006-01-02")
 		var listOfTimeZones []string = tmzUtils.ReadConfigFile()
 		if !cntTime {
-			tableItems = append(tableItems, "Converted Time")
+			tableHeaders = append(tableHeaders, "Converted Time")
 		} else {
-			tableItems = append(tableItems, "Current Time")
+			tableHeaders = append(tableHeaders, "Current Time")
 		}
 
 		for _, tmZone := range listOfTimeZones {
@@ -46,9 +47,9 @@ var showCmd = &cobra.Command{
 				}
 			}
 			locationTime := currentTime.In(location).Format(time.Stamp)
-			tableItems = append(tableItems, tmZone, locationTime)
+			tableItems = append(tableItems, []string{tmZone, locationTime})
 		}
-		tmzUI.DisplayTable(tableItems, len(tableItems)/2, 2)
+		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
 	},
 }
 

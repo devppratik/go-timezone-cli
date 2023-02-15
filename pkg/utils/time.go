@@ -1,5 +1,9 @@
 package tmz
 
-func GetTimeFromLocation(location string) {
+func GetCurrentTimeAtLocation(location string) {
+
+}
+
+func GetConvertedTimeAtLocation(location string) {
 
 }

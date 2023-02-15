@@ -46,7 +46,7 @@ var searchCmd = &cobra.Command{
 		}
 		currentTime := time.Now().In(location).Format(time.Stamp)
 		tableHeaders := []string{"Time Zone", "Current Time"}
-		tableItems := []string{selectedTimeZone, currentTime}
+		tableItems := [][]string{{selectedTimeZone, currentTime}}
 		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
 	},
 }

@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 	"time"
-	tmz "tmz/pkg/ui"
+	tmzUI "tmz/pkg/ui"
 
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
@@ -63,8 +63,10 @@ var getCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 		currentTZTime := time.Now().In(location).Format(time.Stamp)
-		tableItems := []string{"Time Zone", "Current Time", selectedTimeZone, currentTZTime}
-		tmz.DisplayTable(tableItems, len(tableItems)/2, 2)
+		tableHeaders := []string{"Time Zone", "Current Time"}
+		tableItems := [][]string{{selectedTimeZone, currentTZTime}}
+		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
+
 	},
 }
 
