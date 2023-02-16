@@ -2,6 +2,7 @@ package tmz
 
 import (
 	"log"
+	"os"
 	"strings"
 	tmzUI "tmz/pkg/ui"
 	tmzUtils "tmz/pkg/utils"
@@ -20,9 +21,7 @@ var searchCmd = &cobra.Command{
 		if len(countryCode) < 2 {
 			log.Fatalln("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
 		}
-
-		countryList := gojsonq.New().File("pkg/data/country.json")
-
+		countryList := gojsonq.New().File(os.Getenv("GOPATH") + "/pkg/tmz/country.json")
 		if len(countryCode) > 2 {
 			res, err := countryList.From("ALL").GetR()
 			if err != nil {

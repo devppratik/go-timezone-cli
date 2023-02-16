@@ -15,6 +15,9 @@ build:
 .PHONY: install
 install:
 	go build -o ${GOPATH}/bin/tmz
+	mkdir -p ${GOPATH}/pkg/tmz/
+	cp pkg/data/country.json ${GOPATH}/pkg/tmz/
+	cp pkg/data/abbr.json ${GOPATH}/pkg/tmz/
 
 .PHONY: mod
 mod:

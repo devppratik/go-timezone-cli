@@ -3,6 +3,7 @@ package tmz
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	tmzUI "tmz/pkg/ui"
 	tmzUtils "tmz/pkg/utils"
@@ -19,7 +20,8 @@ var getCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var countryCode string = strings.ToUpper(args[0])
 		matchedTimeZones := []string{}
-		countryList := gojsonq.New().File("pkg/data/abbr.json")
+
+		countryList := gojsonq.New().File(os.Getenv("GOPATH") + "/pkg/tmz/abbr.json")
 		res := countryList.From("zones").Where("abbr", "=", countryCode).Get()
 		for _, item := range res.([]interface{}) {
 			var zones, name, abbr string
