@@ -23,7 +23,7 @@ var utcCmd = &cobra.Command{
 		}
 		tableHeaders := []string{"Local Time Zone", "Local Date Time", " UTC Time "}
 		tableItems := [][]string{{localTZName, currentLocalTime, currentUTCTime}}
-		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
+		tmzUI.DisplayTable(tableItems, tableHeaders...)
 	},
 }
 

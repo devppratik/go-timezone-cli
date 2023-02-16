@@ -54,7 +54,7 @@ var searchCmd = &cobra.Command{
 		currentTime := tmzUtils.GetCurrentTimeAtLocation(selectedTimeZone)
 		tableHeaders := []string{"Time Zone", "Current Time"}
 		tableItems := [][]string{{selectedTimeZone, currentTime}}
-		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
+		tmzUI.DisplayTable(tableItems, tableHeaders...)
 	},
 }
 

@@ -23,7 +23,7 @@ var selectCmd = &cobra.Command{
 		}
 		tableHeaders := []string{"Time Zone", "Local Date Time"}
 		tableItems := [][]string{{selectedLocation, displayTime}}
-		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
+		tmzUI.DisplayTable(tableItems, tableHeaders...)
 	},
 }
 

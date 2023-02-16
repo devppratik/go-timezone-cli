@@ -48,7 +48,7 @@ var getCmd = &cobra.Command{
 		}
 		tableHeaders := []string{"Time Zone", "Local Date Time"}
 		tableItems := [][]string{{tmZone, displayTime}}
-		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
+		tmzUI.DisplayTable(tableItems, tableHeaders...)
 
 	},
 }
