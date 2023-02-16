@@ -1,8 +1,6 @@
 package tmz
 
 import (
-	"log"
-	"time"
 	tmzUI "tmz/pkg/ui"
 	tmzUtils "tmz/pkg/utils"
 
@@ -18,13 +16,13 @@ var selectCmd = &cobra.Command{
 		var selectedLocation string
 		var listOfTimeZones []string = tmzUtils.ReadConfigFile()
 		selectedLocation = tmzUI.SelectTimeZone(listOfTimeZones)
-		location, err := time.LoadLocation(selectedLocation)
-		if err != nil {
-			log.Fatalln(err)
+		customTime := tmzUI.PromptForCustomTime()
+		displayTime := tmzUtils.GetCurrentTimeAtLocation(selectedLocation)
+		if customTime != "" {
+			displayTime = tmzUtils.GetConvertedTimeAtLocation(selectedLocation, customTime)
 		}
-		currentTime := time.Now().In(location).Format(time.Stamp)
-		tableHeaders := []string{"Time Zone", "Current Time"}
-		tableItems := [][]string{{selectedLocation, currentTime}}
+		tableHeaders := []string{"Time Zone", "Local Date Time"}
+		tableItems := [][]string{{selectedLocation, displayTime}}
 		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
 	},
 }

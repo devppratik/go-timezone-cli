@@ -1,11 +1,10 @@
 package tmz
 
 import (
-	"fmt"
 	"log"
 	"strings"
-	"time"
 	tmzUI "tmz/pkg/ui"
+	tmzUtils "tmz/pkg/utils"
 
 	"github.com/spf13/cobra"
 	"github.com/thedevsaddam/gojsonq/v2"
@@ -21,30 +20,38 @@ var searchCmd = &cobra.Command{
 		if len(countryCode) < 2 {
 			log.Fatalln("Wrong or Invalid Country Code or Name. Enter 2 or more characters")
 		}
-		// Read the Country List JSON
+
 		countryList := gojsonq.New().File("pkg/data/country.json")
 
 		if len(countryCode) > 2 {
-			res, _ := countryList.From("ALL").GetR()
-			conv, _ := res.StringSlice()
+			res, err := countryList.From("ALL").GetR()
+			if err != nil {
+				log.Fatalln("No Country with the given search term found")
+			}
+			conv, err := res.StringSlice()
+			if err != nil {
+				log.Fatalln("No Country with the given search term found")
+			}
 			var listOfTimeZones []string
 			for _, tmZone := range conv {
 				if strings.Contains(strings.ToLower(tmZone), countryCode) {
 					listOfTimeZones = append(listOfTimeZones, tmZone)
 				}
 			}
+			if len(listOfTimeZones) == 0 {
+				log.Fatalln("No Country with the given search term found")
+			}
 			selectedTimeZone = tmzUI.SelectTimeZone(listOfTimeZones)
 		} else {
-			res, _ := countryList.From(strings.ToUpper(countryCode)).GetR()
+			res, err := countryList.From(strings.ToUpper(countryCode)).GetR()
+			if err != nil {
+				log.Fatalln("No Country with the given search term found")
+			}
 			conv, _ := res.StringSlice()
 			selectedTimeZone = tmzUI.SelectTimeZone(conv)
 		}
 
-		location, err := time.LoadLocation(selectedTimeZone)
-		if err != nil {
-			fmt.Print("error")
-		}
-		currentTime := time.Now().In(location).Format(time.Stamp)
+		currentTime := tmzUtils.GetCurrentTimeAtLocation(selectedTimeZone)
 		tableHeaders := []string{"Time Zone", "Current Time"}
 		tableItems := [][]string{{selectedTimeZone, currentTime}}
 		tmzUI.DisplayNewTable(tableItems, tableHeaders...)
