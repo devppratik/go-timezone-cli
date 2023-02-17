@@ -9,8 +9,8 @@
 - Convert time across timezones
 
 ## Credits
-- Special thanks to @MitaliBhalla for the idea & feedback on the project. 
-- Also thanks to @supreeth7 for providing code review & feedback on the project
+- Special thanks to [@MitaliBhalla](https://github.com/MitaliBhalla) for the idea & feedback on the project. 
+- Also thanks to [@supreeth7](https://github.com/supreeth7) for providing code review & feedback on the project
 
 ## Contents
 
