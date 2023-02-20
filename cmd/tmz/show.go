@@ -19,17 +19,22 @@ var showCmd = &cobra.Command{
 		var tableHeaders = []string{"Time Zone", "Local Date Time"}
 
 		listOfTimeZones := []string{"UTC", "Local"}
+
 		if showAll {
 			listOfTimeZonesFromConfig := tmzUtils.ReadConfigFile()
 			listOfTimeZones = append(listOfTimeZones, listOfTimeZonesFromConfig...)
 		}
-		listOfTimeZones = append(listOfTimeZones, args...)
 		if len(args) > 0 {
+			listOfTimeZones = append(listOfTimeZones, args...)
 			customTime = tmzUtils.GetLocalTimeFromTimeZone(args[0], customTime)
 		}
+		if customTime == "" {
+			customTime = tmzUtils.GetCurrentTimeAtLocation("Local")[7:12]
+		}
+
 		for _, tmZone := range listOfTimeZones {
 			displayTime := tmzUtils.GetConvertedTimeAtLocation(tmZone, customTime)
-			if tmZone == args[0] {
+			if len(args) > 0 && tmZone == args[0] {
 				tmZone += "*"
 			}
 			tableItems = append(tableItems, []string{tmZone, displayTime})
